@@ -1,9 +1,13 @@
 require 'pg'
 
 class Base
+
+DB_NAME = 'Users'
+DB_USER = 'abrakad_22'
+
 	class << self
-		def open_connection(dbname,db_user, table_name)
-			@con = PG.connect :dbname => "#{dbname}" , :user => "#{db_user}"
+		def open_connection(table_name)
+			@con = PG.connect :dbname => "#{DB_NAME}" , :user => "#{DB_USER}"
 			@table_name = table_name
 		end
 
@@ -12,7 +16,7 @@ class Base
 			options.each{ |k,v| 
 				query = query << "#{v}" <<','}
 			query = query.chomp(",")
-			return @con.exec "#{query<<')'}"
+			@con.exec "#{query<<')'}"
 			close_connection
 		end  
 
@@ -31,7 +35,7 @@ class Base
 				query = query << " #{k}" << " = " << "'#{v}'" << " #{logic_operation}" }
 			query = query.chomp(logic_operation)
 			query = query << "WHERE "<< "name='#{name}'" 
-			return @con.exec "#{query}"
+			@con.exec "#{query}"
 			close_connection
 				
 		end
@@ -40,7 +44,7 @@ class Base
 			query = "DELETE FROM #{@table_name} WHERE"
 			options.each{ | k,v |
 				query = query << " #{k}" << " = " << "'#{v}'"}
-			return @con.exec "#{query}"
+			@con.exec "#{query}"
 			close_connection
 		end
 		

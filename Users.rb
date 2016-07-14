@@ -2,12 +2,10 @@ require_relative 'base_class'
 
 class Users < Base
 
-DB_NAME = 'Users'
-DB_USER = 'abrakad_22'
 TABLE_NAME = 'users'
 
 	def open_connection
-		Base.open_connection(DB_NAME, DB_USER, TABLE_NAME)
+		Base.open_connection(TABLE_NAME)
 	end
 
 	def add_user
