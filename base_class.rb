@@ -53,7 +53,7 @@ DB_USER = 'abrakad_22'
 		end
 
 		def table_name
-			self.name
+			self.name << 's'
 		end
 	end
 end
