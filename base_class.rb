@@ -6,50 +6,54 @@ DB_NAME = 'Users'
 DB_USER = 'abrakad_22'
 
 	class << self
-		def open_connection(table_name)
-			@con = PG.connect :dbname => "#{DB_NAME}" , :user => "#{DB_USER}"
-			@table_name = table_name
+
+		def connection
+			PG.connect :dbname => "#{DB_NAME}" , :user => "#{DB_USER}"
 		end
 
 		def add(**options)
-			query = "INSERT INTO #{@table_name} VALUES("
+			query = "INSERT INTO #{table_name} VALUES("
 			options.each{ |k,v| 
-				query = query << "#{v}" <<','}
+				query = query << "'#{v}'" <<','}
 			query = query.chomp(",")
-			@con.exec "#{query<<')'}"
+			connection.exec "#{query<<')'}"
 			close_connection
 		end  
 
 		def select(logic_operation=nil, **options)
-			query = "SELECT * FROM #{@table_name} WHERE"
+			query = "SELECT * FROM #{table_name} WHERE"
 			options.each{ | k,v |
 				query = query << " #{k}" << " = " << "'#{v}'" << " #{logic_operation}" }
 			query = query.chomp(logic_operation)
-			return @con.exec "#{query.chomp(logic_operation)}"
+			return connection.exec "#{query}"
 			close_connection		
 		end
 
-		def update(logic_operation=',',name, **options ) 
-			query = "UPDATE #{@table_name} SET" 
+		def update(name, **options ) 
+			query = "UPDATE #{table_name} SET" 
 			options.each{ | k,v |
-				query = query << " #{k}" << " = " << "'#{v}'" << " #{logic_operation}" }
-			query = query.chomp(logic_operation)
+				query = query << " #{k}" << " = " << "'#{v}'" << " , " }
+			query = query.chomp(' , ')
 			query = query << "WHERE "<< "name='#{name}'" 
-			@con.exec "#{query}"
+			connection.exec "#{query}"
 			close_connection
 				
 		end
 
 		def delete(**options)
-			query = "DELETE FROM #{@table_name} WHERE"
+			query = "DELETE FROM #{table_name} WHERE"
 			options.each{ | k,v |
 				query = query << " #{k}" << " = " << "'#{v}'"}
-			@con.exec "#{query}"
+			response = connection.exec "#{query}"
 			close_connection
 		end
 		
 		def close_connection
-			@con.close
+			connection.close
+		end
+
+		def table_name
+			self.name
 		end
 	end
 end
